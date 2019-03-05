@@ -1,0 +1,83 @@
+html,body,ul,li,p,h1,h2,h3 {
+    margin:0;
+    padding:0;
+}
+ul,li {
+    list-style-type: none;
+}
+.flex {
+    display:flex;
+    align-items: center;
+}
+
+@media screen and (max-width: 1920px) {
+	html {
+		font-size: 40px;
+	}
+	#date {
+		top: 2px;
+	}
+}
+
+@media screen and (max-width: 1680px) {
+	html {
+		font-size: 35px;
+	}
+	.data-list-chart {
+		transform: scale(.9);
+	}
+	.add-title {
+		margin-left: 50px;
+		margin-top: 35px;
+	}
+	.line {
+		top: 9rem;
+		right: 100px;
+	}
+	#date {
+		top: 6px;
+	}
+    .data{
+    	top:2.4rem;
+    }
+    .map{
+    	padding-top: 84px;
+    }
+    .btntime{
+		top:4.2rem;
+	}
+}
+
+@media screen and (max-width: 1440px) {
+	html {
+		font-size: 28px;
+	}
+	.line {
+		top: 11.5rem;
+		right: 100px;
+	}
+	.btntime{
+		top:4.5rem;
+	}
+}
+
+@media screen and (max-width: 1400px) {
+	html {
+		font-size: 25px;
+	}
+	.data-list-chart {
+		transform: scale(.8);
+	}
+
+	.line {
+		top: 8rem;
+		/*改热力线的位置*/
+		right: 100px;
+	}
+	#date {
+		top: 14px;
+	}
+    .data{
+    	top:2.9rem;
+    }
+}
