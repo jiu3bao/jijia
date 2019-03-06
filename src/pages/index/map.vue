@@ -1,22 +1,22 @@
 <template>
     <div class='map'>
-        <DQ v-if='city == "dq"'></DQ>
-        <NJ v-if='city == "nj"'></NJ>
-        <DH v-if='city == "dh"'></DH>
-        <DL v-if='city == "dl"'></DL>
-        <BN v-if='city == "bn"'></BN>
-        <WS v-if='city == "ws"'></WS>
-        <HH v-if='city == "hh"'></HH>
-        <CX v-if='city == "cx"'></CX>
-        <LC v-if='city == "lc"'></LC>
-        <PE v-if='city == "pe"'></PE>
-        <LJ v-if='city == "lj"'></LJ>
-        <ZT v-if='city == "zt"'></ZT>
-        <BS v-if='city == "bs"'></BS>
-        <YN v-if='city == "yn"'></YN>
-        <KM v-if='city == "km"'></KM>
-        <QJ v-if='city == "qj"'></QJ>
-        <YX v-if='city == "yx"'></YX>
+        <DQ v-if='city == "dq"' :barDate='barDate'></DQ>
+        <NJ v-if='city == "nj"' :barDate='barDate'></NJ>
+        <DH v-if='city == "dh"' :barDate='barDate'></DH>
+        <DL v-if='city == "dl"' :barDate='barDate'></DL>
+        <BN v-if='city == "bn"' :barDate='barDate'></BN>
+        <WS v-if='city == "ws"' :barDate='barDate'></WS>
+        <HH v-if='city == "hh"' :barDate='barDate'></HH>
+        <CX v-if='city == "cx"' :barDate='barDate'></CX>
+        <LC v-if='city == "lc"' :barDate='barDate'></LC>
+        <PE v-if='city == "pe"' :barDate='barDate'></PE>
+        <LJ v-if='city == "lj"' :barDate='barDate'></LJ>
+        <ZT v-if='city == "zt"' :barDate='barDate'></ZT>
+        <BS v-if='city == "bs"' :barDate='barDate'></BS>
+        <YN v-if='city == "yn"' :barDate='barDate'></YN>
+        <KM v-if='city == "km"' :barDate='barDate'></KM>
+        <QJ v-if='city == "qj"' :barDate='barDate'></QJ>
+        <YX v-if='city == "yx"' :barDate='barDate'></YX>
     </div>
 </template>
 
@@ -65,6 +65,10 @@ import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 
 export default class mapContain extends Vue{
     city:string='yn'
+
+    @Prop()
+    barDate:Array<any>
+
 }
 </script>
 

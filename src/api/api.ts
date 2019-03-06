@@ -44,7 +44,7 @@ const api = {
     }
     return service.post('/idxapi/getArea',data)
   },
-  getAllTendency (data) {
+  getAllTendency (data?) {
     if (data) {
       data = qs.stringify(data, { allowDots: true })
     }

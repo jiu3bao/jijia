@@ -5,7 +5,7 @@
             <!--@mouseleave="resumeScroll"-->
             <div class="swiper-wrapper">
                 <div class="swiper-slide" v-for="(item,index) in cateList" :key="item.id">
-                    <div class="sp-title" @click="lookClpct(item.id,'',index)">
+                    <div class="sp-title" @click="lookClpct(item,index)">
                         <!--传一个空进来是避免没传pid影响代码运行，js里面传了pid，这里用空代替pid-->
                         <div class='flex'>
                             <img :src="'static/assets/fl'+index+'.png'">
@@ -14,20 +14,18 @@
                         <button class="xiangqins" @click="lookFisrtDetail(item.id,item.name)">查看详情</button>
                     </div>
                     <div class="data-list" v-for="(cont,i) in item.children" :key="cont.id">
-                        <div class='data-list-name'>
+                        <div class='data-list-name' @click='lookClpct(cont,i)'>
                             <p>{{cont.name}}</p>
                             <div class='flex'>
                                 <p>数值:{{cont.linedate?(cont.linedate.length>0?cont.linedate[cont.linedate.length-1].mindex:'暂无数据'):'aaa'}}</p>
                                 <p>趋势:{{cont.linedate?(cont.linedate.length>0?cont.linedate[cont.linedate.length-1].idxval:''):''}}</p>
                             </div>
-                            <div class="data-list-icon">
-                                <img :src="cont.linedate?(cont.linedate.length>0?(cont.linedate[cont.linedate.length-1].idxval>0?'static/assets/up.png':(cont.linedate[cont.linedate.length-1].idxval==0?'static/assets/steady.png':'static/assets/down.png')):''):''">
-                            </div>
-                            <div :id="'data-list-chart'+cont.id" class="data-list-chart">
-
-                            </div>
                         </div>
-
+                        <div class="data-list-icon">
+                            <img :src="cont.linedate?(cont.linedate.length>0?(cont.linedate[cont.linedate.length-1].idxval>0?'static/assets/up.png':(cont.linedate[cont.linedate.length-1].idxval==0?'static/assets/steady.png':'static/assets/down.png')):''):''">
+                        </div>
+                        <div :id="'data-list-chart'+cont.id" class="data-list-chart">
+                        </div>
                     </div>
 
                 </div>
@@ -40,11 +38,11 @@
 
 <script lang='ts'>
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-
+import echarts from 'echarts'
 @Component({})
 export default class cateList extends Vue{
-    
-
+    chart:any
+    cate_index:number
     @Prop({
         type: Array
     })
@@ -54,9 +52,91 @@ export default class cateList extends Vue{
     //     return this.cateList
     // }
 
-    @Watch('cate')
-    catechange(val) {
-        console.log(val,'1111')
+    @Watch('cateList',{ immediate: true, deep: true })
+    catechange(val:Array<any>) {
+        val.map( item => {
+            item.children.map( child => {
+                this.init(child.id, child.linedate)
+                //this.render_charts(child.id, child.linedate)
+            })
+        })
+        
+    }
+
+    init(id:string,res:Array<any>) {// 折线图渲染
+        if(res.length==0) {
+            return 
+        };
+        let x:Array<string> = []
+		let	y:Array<any> = []
+		res.map(v => {
+			x.push(v.mdate)
+			let obj = {
+                time:v.mdate,
+                value : v.mindex,
+			    idxval : v.idxval
+			}
+			y.push(obj)
+		})
+        this.$nextTick(() => {
+            this.chart = echarts.init(document.getElementById(`data-list-chart${id}`)as HTMLDivElement);
+        let option = {
+			tooltip: {
+				show: true,
+				trigger: 'item',
+				formatter: function(p) {
+					return(
+						p.data['time'] + '</br>指数:&nbsp;' + p['value'] +
+						'<br>涨跌:&nbsp;' + p.data['idxval']
+					);
+				}
+			},
+			xAxis: {
+				type: 'category',
+				data: x,
+				max: 'dataMax',
+				min: 'dataMin',
+				show: false
+			},
+			yAxis: {
+				type: 'value',
+				show: false,
+				max: 'dataMax',
+				min: 'dataMin',
+
+			},
+			grid:{
+                  top:"50px",
+                  left:"-50px",
+                  right:"-15px",
+                  bottom:"50px"
+            },
+			series: [{
+				smooth: true,
+				showSymbol: false,
+				data: y,
+				type: 'line',
+				symbol: "none", //去除折线图的圆点
+				itemStyle: { //设置折线图的颜色
+					normal: {
+						color: 'green',
+						lineStyle: {
+							width:1,
+							color: 'lightblue'
+						}
+					}
+				}
+			}]
+
+		};
+        this.chart.setOption(option)
+        })
+        
+    }
+    
+    lookClpct(item:object,index:number) {//点选cate
+        this.cate_index = index
+        this.$emit('getNowCate', item)
     }
 }
 </script>
@@ -99,7 +179,7 @@ export default class cateList extends Vue{
 }
 .data-list {
 	display: flex;
-	//height: 70px;
+	height: 70px;
 	align-items: center;
 	justify-content: space-between;
 	font-size: .4rem;
@@ -107,12 +187,22 @@ export default class cateList extends Vue{
 	cursor:pointer;
 }
 .data-list-name {
-	padding:0 .125rem 0 0.5rem;
-	width: 10em;
-	line-height:70px;
+	padding:0.5rem;
+    width:50%;
+	line-height:1;
+    height:100%;
 	background-color: #536288;
-    .div {
+    box-sizing:border-box;
+    p {
+        line-height:2;
+    }
+    div {
         display:flex;
+        p {
+            flex-shrink:0;
+            width:50%;
+        }    
+    
     }
 }
 .data-list-number {
@@ -137,8 +227,7 @@ export default class cateList extends Vue{
 .data-list-chart {
 	background: rgb(82,100,140);
 	width: 210px;
-    height: 60px;
-    margin-left: .5rem;
+    height: 100%;
     /*margin-top: 10px;*/
 }
 .sp-title img {
