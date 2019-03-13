@@ -128,7 +128,7 @@ export default class cateList extends Vue{
         //this.$router.push('/detail?c1='+cate.pid + '&c2='+cate.id+'&name='+cate.name)
         if(this.$store.state.token && this.$store.state.token.length >0 ) {
             this.$store.commit('SET_DETAIL_CATE', cate)
-            this.$router.push('/detail')
+            this.$router.push('/detail?c1='+cate.pid + '&c2='+cate.id+'&name='+cate.name)
         } else {
             this.$router.push('/login')
         }
