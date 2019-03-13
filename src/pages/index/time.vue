@@ -39,9 +39,9 @@
 		template: '<div class="slider-container">\
 			<div class="back-bar">\
                 <div class="selected-bar"></div>\
-                <div class="pointer low"></div><div class="pointer-label low">123456</div>\
+                <div class="pointer low"></div><div class="pointer-label low"></div>\
                 <div class="pointer high"></div>\
-                <div class="pointer-label high">456789</div>\
+                <div class="pointer-label high"></div>\
                 <div class="clickable-dummy"></div>\
             </div>\
             <div class="scale"></div>\
@@ -97,7 +97,6 @@
 		
 		},
 		attachEvents: function() {
-//			this.clickableBar.click($.proxy(this.barClicked, this));
 			this.pointers.on('mousedown touchstart', $.proxy(this.onDragStart, this));
 			this.pointers.bind('dragstart', function(event) {
 				event.preventDefault();
@@ -378,10 +377,7 @@
 		return result || this;
 	};
 })($, window, document);
-// import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 
-// @Component({
-// })
 export default {
     data() {
         return {
@@ -389,8 +385,8 @@ export default {
                 disabledDate: (time) => {
                     let curDate = (new Date()).getTime();
                     let threeMonths = 1514736000000;//开始时间2018-01-01
-                    if(this.value5 != "") {
-                        return time.getTime() > Date.now() || time.getTime() >this.value5-1|| time.getTime() < threeMonths;
+                    if(this.te != "") {
+                        return time.getTime() > Date.now() || time.getTime() >this.te-1|| time.getTime() < threeMonths
                     } else {
                         return time.getTime() > Date.now() || time.getTime() < threeMonths
                     }
@@ -402,26 +398,104 @@ export default {
                 disabledDate: (time) => {
                     let curDate = (new Date()).getTime();
                     let threeMonths = 1514736000000;
-                    return time.getTime()<this.value4-0+3.024e9|| time.getTime() > Date.now() || time.getTime() < threeMonths;//3.024e9  35天的毫秒数
+                    return time.getTime()<this.ts-0+3.024e9|| time.getTime() > Date.now() || time.getTime() < threeMonths //3.024e9  35天的毫秒数
                 }
             },
-            ts:'',
-            te:'',
+           
             value4:'',
-            value5:''
+            value5:'',
+			first:true
         }
     },
-    // ts:string= ''
-    // te:string= ''
-    // value4:string=''
-    // value5: string=''
-    
-
+    computed: {
+		time() {
+			return this.$store.state.time
+		},
+	},	
+	
     mounted() {
-        const slide = document.getElementById('aa')
-    	$('#age-slider').jRange('setValue', Date.parse(((this.ts-0)/100).toFixed(2)) + ',' + Date.parse(((this.te-0)/100).toFixed(2)));//把导航栏上面拿到的日期值赋给日历和滑块
-    }
+		const myDate = new Date();
+		const M=myDate.getMonth()+1;
+		let N=myDate.getFullYear();
+		const D=myDate.getDate();
+        let M_string
+        if(D>15) {
+            M_string = M>9?M.toString(): "0" + M.toString()
+        } else {
+            if(M>10) {
+                M_string = (M-1).toString()
+            } else {
+                if(M>1) {
+                    M_string="0" + (M-1).toString()
+                } else {
+                    M_string = "12", N=N-1
+                }
+            }
+        }
+		var nowtime = Date.parse(new Date(N+"-"+M_string));
+		var stringTime = "2018-01-01 00:00:00";
+		var timestamp2 = Date.parse(new Date(stringTime));
+		const slide = document.getElementById('aa')
+		const that = this
+		this.$nextTick(() => {
+			$('#age-slider').jRange({
+				from: timestamp2,
+				to: nowtime,
+				step: 86400000,
+				format: '%s',
+				width: 400,
+				showLabels: true,
+				showScale: false,
+				isRange: true,
+				snap: true,
+				theme: "theme-blue",
+				onstatechange: function() {//数字变化的时候的回调函数
+					var ts = $('.low').text();
+					var te = $('.high').text();			
+					$(".sta .el-input__inner").val(ts);
+					$(".end .el-input__inner").val(te);
+					if(ts.length>0 && te.length>0) {
+						console.log(that.first)
+						if(that.first) {
+							that.$emit('changeTime', {te: te, ts: ts})
+							that.first = false
+						}
+					}
+				},
+				ondragend: function() {//拖拽结束时的回调函数
+					var ts = $('.low').text().split("-").join('');
+					var te = $('.high').text().split("-").join('');
+					if(ts.length>0 && te.length>0) {
+						that.$emit('changeTime', {te: te, ts: ts, first:true})
+					}
+				},
+			});
+		})
+    },
 
+	watch:{
+		value4(val) {
+			$('#age-slider').jRange('setValue', Date.parse(new Date(this.value4)) + ',' + Date.parse(new Date(this.value5)));
+			var ts = $('.low').text().split("-").join('');
+			var te = $('.high').text().split("-").join('');
+			this.$emit('changeTime', {te: te, ts: ts})
+			console.log(te,ts)
+		},
+		value5(val) {
+			$('#age-slider').jRange('setValue', Date.parse(new Date(this.value4)) + ',' + Date.parse(new Date(this.value5)));
+			var ts = $('.low').text().split("-").join('');
+			var te = $('.high').text().split("-").join('');
+			this.$emit('changeTime', {te: te, ts: ts})
+		},
+		time: {
+			handler(val) {
+				
+			},
+			deep:true,
+			immediate:true
+		}
+	},
+	
 }
 </script>
 
@@ -474,7 +548,7 @@ export default {
 
     .slider-container .back-bar .pointer-label {
         position: absolute;
-        top: 30px;
+        top: 40px;
         font-size: 8px;
         background: #fff;
         white-space: nowrap;
@@ -638,17 +712,17 @@ export default {
         color: #999
     }
     .slider-container .theme-blue {
-        margin-top: 17px;
+        //margin-top: 17px;
     }
     .theme-blue .back-bar {
         height: 32px;
-        margin-top: 17px;
+        //margin-top: 17px;
     }
 
     .theme-blue .back-bar .pointer {
         height: 32px;
     }
     .slider-container .back-bar .pointer-label{
-        font-size: 3px;
+        font-size: 10px;
     }
 </style>

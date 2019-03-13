@@ -453,11 +453,18 @@ import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 
 @Component({})
 export default class ynMap extends Vue{
-    @Prop()
-	barDate: Array<any>
+    get barDate() {
+			return this.$store.state.barData
+		}
+
+		@Watch('barDate', {immediate:true, deep:true})
+		wt(val) {
+			console.log(val,'state')
+		}
 
     clickMap(name:string, id: number, city: string) {//name:缩写,id:区域编码，city:中文全称
 		console.log(this.barDate)
+		this.$emit('choseMap', {id,city})
     }
 }
 </script>

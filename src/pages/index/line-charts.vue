@@ -18,12 +18,22 @@ export default class lineChart extends Vue{
     @Prop()
     lineDate: Array<any>
 
+    @Prop() 
+    lineLength: number
+
     @Prop()
     barDate: Array<any>
 
-    @Watch('lineDate', { immediate: true, deep: true })
+    @Watch('lineDate', { deep: true })
     changeDate(val:Array<any>) {
-        this.init_line(val)
+        console.log(8989889)
+        if(val[0] && val[0].name) {
+            if(this.lineLength != val.length) return
+            this.init_all_line(val)
+        } else {
+            this.init_line(val)
+        }
+        
     }
 
     @Watch('barDate', { immediate: true, deep: true })
@@ -32,14 +42,17 @@ export default class lineChart extends Vue{
     }
 
     init_line(val) {
+        if(this.chart1) this.chart1.dispose()
         let y:Array<any> = []
         let x:Array<any> = []
         this.$nextTick(() => {
+            console.log(val,123123)
             val.map(item => {
                 y.push(item.mindex)
                 x.push(((item.mdate) / 100).toFixed(2))
 
             })
+            console.log(val)
             this.chart1 = echarts.init(document.getElementById("line") as HTMLDivElement);
             let option = {
                 xAxis: {
@@ -85,6 +98,57 @@ export default class lineChart extends Vue{
         })
     }
 
+    init_all_line(val) {
+        if(this.chart1) this.chart1.dispose()
+        let x:Array<any> = []
+        let data:Array<any> = []
+        let lengend:Array<string>=[]
+        val[0].line_data.map(item => { //获取x轴时间
+            x.push(((item.mdate) / 100).toFixed(2))
+        })
+        val.map(item => {
+            lengend.push(item.name)
+            let y = []
+            item.line_data.map(data => {
+                y.push(data.mindex)//获取Y轴数据
+            })
+            data.push({// series
+                name: item.name,
+                type:'line',
+                data: y,
+                smooth:true,
+                itemStyle: {normal: {areaStyle: {type: 'default'}}}, 
+            })
+        })
+        console.log(lengend,data, x)
+        this.$nextTick(() => {
+            this.chart1 = echarts.init(document.getElementById("line") as HTMLDivElement);
+            let option = {
+                tooltip : {
+                    trigger: 'axis'
+                },
+                calculable : true,
+                legend:{
+                    data: data
+                },
+                xAxis: [{
+					type: 'category',
+					boundaryGap: false,
+					data: x
+				}],
+                yAxis: [{
+					type: 'value'
+				}],
+                grid: {
+                    x: 60,
+                    y: 70
+                },
+				series:data
+            }
+            this.chart1.setOption(option);
+        })
+    }
+
     init_bar(val) {
         this.$nextTick(() => {
             this.chart2 = echarts.init(document.getElementById('bar') as HTMLDivElement);
@@ -101,16 +165,32 @@ export default class lineChart extends Vue{
                     trigger: 'item' //悬浮提示框不显示
                 },
                 grid: { //绘图区调整
-                    x: 150, //左留白
-                    y: 10, //上留白
-                    x2: 10, //右留白
-                    y2: 10 //下留白
+                    // x: 150, //左留白
+                    // y: 10, //上留白
+                    // x2: 10, //右留白
+                    // y2: 10, //下留白
+                    backgroundColor:'#999',
+                    show:true,
+                    // left: '3%',
+                    // right: '4%',
+                    bottom: '0',
+                    top: '3%',
+                    height:'auto',
+                    containLabel: true
                 },
                 xAxis: [{
-                    show: false,
+                    show: true,
                     type: 'value',
-                    boundaryGap: [0, 0],
-                    position: 'top'
+                    nameLocation:'end',
+                    nameTextStyle:{
+                        color:'#f00',
+                        align:'right'
+                    },
+                    nameGap:'5px',
+                    
+
+                    // boundaryGap: [0, 0],
+                    // position: 'top'
                 }],
                 yAxis: [{
                     type: 'category',
@@ -137,10 +217,12 @@ export default class lineChart extends Vue{
                     tooltip: {
                         show: false
                     },
-                    barMinHeight: 50, //最小柱高
-                    //						barWidth: 40, //柱宽度
+                    //barGap:"20",
+                    //barCategoryGap:'20',
+                    //barMinHeight: 50, //最小柱高
+                    barWidth: 10, //柱宽度
                     //						barCategoryGap:100,
-                    barMaxWidth: 100, //最大柱宽度
+                    //barMaxWidth: 100, //最大柱宽度
                     data: pct,
                     itemStyle: {
                         normal: { //柱状图颜色
@@ -171,6 +253,6 @@ export default class lineChart extends Vue{
 <style lang="less">
     .line {
         width:100%;
-        
+        margin-top:15px;
     }
 </style>

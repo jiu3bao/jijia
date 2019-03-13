@@ -1,11 +1,11 @@
 <template>
-    <div class="center" v-cloak>
+    <div class="center">
         <div class="baogaos" :class='index == chosed_index?"darkbg":""' @click="light(index)" v-for='(item,index) in chosed_city'>
-            <p>云南省</p>
-            <p>><u>aa市</u></p>
-            <p>><u>bb区</u></p>
-            <p>&nbsp;&nbsp;|&nbsp;&nbsp;2018.9-2019.2&nbsp;&nbsp;|&nbsp;&nbsp;</p>		
-            <p class="cailiaoname">材料名</p>
+            <p @click='back_yn'>云南省</p>
+            <p v-if='$store.state.area_name && $store.state.area_name.length>0' @click='back_city'>><u>{{$store.state.area_name}}</u></p>
+            <p v-if='$store.state.qu_name && $store.state.qu_name.length>0'>><u>{{$store.state.qu_name}}</u></p>
+            <p>&nbsp;&nbsp;|&nbsp;&nbsp;{{$store.state.time.ts}}-{{$store.state.time.te}}&nbsp;&nbsp;|&nbsp;&nbsp;</p>		
+            <p class="cailiaoname">{{!nowCate.name || nowCate.name.length==0? '全类型综合': nowCate.name}}</p>
             <p><button class="chakans">查看报告</button></p>
             <img :src='index == chosed_index?"static/assets/cha.png":"static/assets/cha2.png"' class="cha2" alt=""/>
         </div>			
@@ -31,6 +31,9 @@ export default class top extends Vue{
     })
     chosed_city: Array<number>
 
+    @Prop({})
+    nowCate:any
+
 
     light(index:number) {
         this.chosed_index = index
@@ -43,18 +46,34 @@ export default class top extends Vue{
     kaishi() {
 
     }
+
+    back_yn() {
+        console.log(33333333333)
+        this.$store.commit('SET_AREA_CODE', '')
+        this.$store.commit('SET_AREA_NAME', '')
+        this.$store.commit('SET_SHOW_QU', false)
+        this.$store.commit('SET_QU_NAME', '')
+        this.$store.commit('SET_QU_CODE', '')
+    }
+
+    back_city() {
+        this.$store.commit('SET_SHOW_QU', false)
+        this.$store.commit('SET_QU_NAME', '')
+        this.$store.commit('SET_QU_CODE', '')
+    }
 }
 </script>
 <style lang="less" scoped>
      .center{
         width:100%;
-        height: 30px;
+        height: 1.1rem;
         background: #202f50;
-        // position: relative;
+        position: absolute;
         // top:1.725rem;
         display:flex;
+        z-index:111;
         .baogaos {
-            height: 30px;
+            height: 1.1rem;
             background-color: #b0b0b0;
             padding-left: 20px;
             padding-right: 10px;

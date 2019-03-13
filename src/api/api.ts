@@ -67,6 +67,12 @@ const api = {
       data = qs.stringify(data, { allowDots: true })
     }
     return service.post('/idxapi/getTendencyByCity',data)
+  },
+  userLogin (data) {
+    if (data) {
+      data = qs.stringify(data, { allowDots: true })
+    }
+    return service.post('/idxapi/userLogin',data)
   }
 }
 

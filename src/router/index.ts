@@ -20,6 +20,21 @@ export default new Router({
       path: '/index',
       name: 'index',
       component: () => import('../pages/index/index.vue')
+    },
+    {
+      path: '/help',
+      name: 'help',
+      component: () => import('../pages/help/help.vue')
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('../pages/login/login.vue')
+    },
+    {
+      path: '/detail',
+      name: 'detail',
+      component: () => import('../pages/detail/detail.vue')
     }
   ]
 })

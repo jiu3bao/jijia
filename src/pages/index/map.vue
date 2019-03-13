@@ -1,22 +1,26 @@
 <template>
     <div class='map'>
-        <DQ v-if='city == "dq"' :barDate='barDate'></DQ>
-        <NJ v-if='city == "nj"' :barDate='barDate'></NJ>
-        <DH v-if='city == "dh"' :barDate='barDate'></DH>
-        <DL v-if='city == "dl"' :barDate='barDate'></DL>
-        <BN v-if='city == "bn"' :barDate='barDate'></BN>
-        <WS v-if='city == "ws"' :barDate='barDate'></WS>
-        <HH v-if='city == "hh"' :barDate='barDate'></HH>
-        <CX v-if='city == "cx"' :barDate='barDate'></CX>
-        <LC v-if='city == "lc"' :barDate='barDate'></LC>
-        <PE v-if='city == "pe"' :barDate='barDate'></PE>
-        <LJ v-if='city == "lj"' :barDate='barDate'></LJ>
-        <ZT v-if='city == "zt"' :barDate='barDate'></ZT>
-        <BS v-if='city == "bs"' :barDate='barDate'></BS>
-        <YN v-if='city == "yn"' :barDate='barDate'></YN>
-        <KM v-if='city == "km"' :barDate='barDate'></KM>
-        <QJ v-if='city == "qj"' :barDate='barDate'></QJ>
-        <YX v-if='city == "yx"' :barDate='barDate'></YX>
+        <div v-show='!show_qu'>
+            <DQ v-if='city_code == "533400000000"' @showIfra = 'show_ifra'></DQ>
+            <NJ v-if='city_code == "533300000000"' @showIfra = 'show_ifra'></NJ>
+            <DH v-if='city_code == "533100000000"' @showIfra = 'show_ifra'></DH>
+            <DL v-if='city_code == "532900000000"' @showIfra = 'show_ifra'></DL>
+            <BN v-if='city_code == "532800000000"' @showIfra = 'show_ifra'></BN>
+            <WS v-if='city_code == "532600000000"' @showIfra = 'show_ifra'></WS>
+            <HH v-if='city_code == "532500000000"' @showIfra = 'show_ifra'></HH>
+            <CX v-if='city_code == "532300000000"' @showIfra = 'show_ifra'></CX>
+            <LC v-if='city_code == "530900000000"' @showIfra = 'show_ifra'></LC>
+            <PE v-if='city_code == "530800000000"' @showIfra = 'show_ifra'></PE>
+            <LJ v-if='city_code == "530700000000"' @showIfra = 'show_ifra'></LJ>
+            <ZT v-if='city_code == "530600000000"' @showIfra = 'show_ifra'></ZT>
+            <BS v-if='city_code == "530500000000"' @showIfra = 'show_ifra'></BS>
+            <YN v-if='city_code == ""'  @choseMap='chose_map'></YN>
+            <KM v-if='city_code == "530100000000"' @showIfra = 'show_ifra'></KM>
+            <QJ v-if='city_code == "530300000000"' @showIfra = 'show_ifra'></QJ>
+            <YX v-if='city_code == "530400000000"' @showIfra = 'show_ifra'></YX>
+        </div>
+        
+        <iframe width="100%" height="600px" frameborder="no" border="0" v-show='show_qu' :src='qu_url' class='iframe'></iframe>
     </div>
 </template>
 
@@ -64,11 +68,35 @@ import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 })
 
 export default class mapContain extends Vue{
-    city:string='yn'
+    qu_url: string = ''
 
-    @Prop()
-    barDate:Array<any>
+    get city_code(): string {
+        return this.$store.state.area_code
+    }
 
+    get show_qu(): boolean {
+        return this.$store.state.show_qu
+    }
+    // @Watch('barDate', {immediate:true, deep:true}) 
+    //     watchBar(val) {
+    //         if(val.length == 0) {
+    //             return
+    //         }
+    //         this.mapData= this.barDate
+    //         console.log(val,1111111111)
+    //     }
+
+    chose_map(data:any) {
+        console.log(222222222222)
+        this.$store.commit('SET_AREA_CODE', data.id)
+        this.$store.commit('SET_AREA_NAME',data.city)
+    }
+
+    show_ifra(url: string) {
+        this.$store.commit('SET_SHOW_QU', true)
+        console.log(url)
+        this.qu_url = url
+    }
 }
 </script>
 
@@ -76,5 +104,15 @@ export default class mapContain extends Vue{
     .map {
         width:80%;
         margin:0 auto;
+        position:relative;
+        height:60%;
+    }
+    .iframe {
+        position:absolute;
+        top:80px;
+
+    }
+    svg {
+        height:50%;
     }
 </style>

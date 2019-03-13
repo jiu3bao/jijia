@@ -1,6 +1,6 @@
 <template>
     <div class="data">
-        <div class="alls" style="background: rgb(83, 98, 136); color: rgb(255, 255, 255);">全类型综合</div>
+        <div class="alls" style="background: rgb(83, 98, 136); color: rgb(255, 255, 255);" @click='lookClpct({id:""},null)'>全类型综合指数</div>
         <div class="swiper-container">
             <!--@mouseleave="resumeScroll"-->
             <div class="swiper-wrapper">
@@ -9,23 +9,21 @@
                         <!--传一个空进来是避免没传pid影响代码运行，js里面传了pid，这里用空代替pid-->
                         <div class='flex'>
                             <img :src="'static/assets/fl'+index+'.png'">
-                            <span>{{item.name}}</span>
+                            <span>{{item.name}}指数</span>
                         </div>
-                        <button class="xiangqins" @click="lookFisrtDetail(item.id,item.name)">查看详情</button>
+                    <!--button class="xiangqins" @click="lookFisrtDetail(item.id,item.name)">查看详情</button-->
                     </div>
-                    <div class="data-list" v-for="(cont,i) in item.children" :key="cont.id">
-                        <div class='data-list-name' @click='lookClpct(cont,i)'>
-                            <p>{{cont.name}}</p>
-                            <div class='flex'>
-                                <p>数值:{{cont.linedate?(cont.linedate.length>0?cont.linedate[cont.linedate.length-1].mindex:'暂无数据'):'aaa'}}</p>
-                                <p>趋势:{{cont.linedate?(cont.linedate.length>0?cont.linedate[cont.linedate.length-1].idxval:''):''}}</p>
-                            </div>
+                    <div class="data-list " v-for="(cont,i) in item.children" :key="cont.id" @click='toDetail(cont)'>
+                        <div :class="cate_index == cont.id?'data-list-name bg-w':'data-list-name'" @click='lookClpct(cont,i)'>
+                            {{cont.name}}指数
                         </div>
+                        <p>指数:{{cont.linedate?(cont.linedate.length>0?cont.linedate[cont.linedate.length-1].mindex:'暂无数据'):'aaa'}}点</p>
+                        <p>涨跌:{{cont.linedate?(cont.linedate.length>0?cont.linedate[cont.linedate.length-1].idxval:''):''}}点</p>
                         <div class="data-list-icon">
                             <img :src="cont.linedate?(cont.linedate.length>0?(cont.linedate[cont.linedate.length-1].idxval>0?'static/assets/up.png':(cont.linedate[cont.linedate.length-1].idxval==0?'static/assets/steady.png':'static/assets/down.png')):''):''">
                         </div>
-                        <div :id="'data-list-chart'+cont.id" class="data-list-chart">
-                        </div>
+                        <!--div :id="'data-list-chart'+cont.id" class="data-list-chart">
+                        </div-->
                     </div>
 
                 </div>
@@ -42,26 +40,11 @@ import echarts from 'echarts'
 @Component({})
 export default class cateList extends Vue{
     chart:any
-    cate_index:number
+    cate_index:number = 0
     @Prop({
         type: Array
     })
     cateList
-
-    // get cate(): Array<any>{//computed
-    //     return this.cateList
-    // }
-
-    @Watch('cateList',{ immediate: true, deep: true })
-    catechange(val:Array<any>) {
-        val.map( item => {
-            item.children.map( child => {
-                this.init(child.id, child.linedate)
-                //this.render_charts(child.id, child.linedate)
-            })
-        })
-        
-    }
 
     init(id:string,res:Array<any>) {// 折线图渲染
         if(res.length==0) {
@@ -134,9 +117,22 @@ export default class cateList extends Vue{
         
     }
     
-    lookClpct(item:object,index:number) {//点选cate
-        this.cate_index = index
+    lookClpct(item:any,index:number) {//点选cate
+        event.stopPropagation(); 
+        this.cate_index = item.id
         this.$emit('getNowCate', item)
+    }
+
+    toDetail(cate) {
+        //this.$store.commit('SET_DETAIL_CATE', cate)
+        //this.$router.push('/detail?c1='+cate.pid + '&c2='+cate.id+'&name='+cate.name)
+        if(this.$store.state.token && this.$store.state.token.length >0 ) {
+            this.$store.commit('SET_DETAIL_CATE', cate)
+            this.$router.push('/detail')
+        } else {
+            this.$router.push('/login')
+        }
+        
     }
 }
 </script>
@@ -144,11 +140,15 @@ export default class cateList extends Vue{
 <style lang="less">
     .data {
         height: 100%;
+        position:relative;
+        //padding-top:1.7rem;
     }
     .swiper-container {
         width: 100%;
         overflow-y: scroll;
         height: 100%;
+        padding-top:1.75rem;
+        box-sizing:border-box;
     }
 
     .swiper-slide {
@@ -185,25 +185,24 @@ export default class cateList extends Vue{
 	font-size: .4rem;
 	color: #ebedf1;
 	cursor:pointer;
+    background:#525a88;
+    align-items:center;
+}
+.data-list:hover {
+    color:#5479B6;
+    background:#ddd
+}
+.data-list:hover > .data-list-name {
+    background:#fff
 }
 .data-list-name {
-	padding:0.5rem;
-    width:50%;
-	line-height:1;
-    height:100%;
+	padding:0 0.5rem;
+    width:30%;
 	background-color: #536288;
     box-sizing:border-box;
-    p {
-        line-height:2;
-    }
-    div {
-        display:flex;
-        p {
-            flex-shrink:0;
-            width:50%;
-        }    
-    
-    }
+    line-height:70px;
+    box-sizing:border-box;
+    height:70px;
 }
 .data-list-number {
 	margin-right: .7rem;
@@ -216,6 +215,7 @@ export default class cateList extends Vue{
 }
 .data-list-icon img {
 	width: .3rem;
+    margin-right:10px;
 }
 
 .data-list-updown {
@@ -237,7 +237,10 @@ export default class cateList extends Vue{
 }
 .alls {
     font-size:.7rem;
-    padding:15px;
+    padding:.5rem;
+    position:absolute;
+    width:100%;
+    box-sizing:border-box;
 }
 .xiangqins,.xiangqins2{
     padding: 5px 40px;
@@ -249,5 +252,12 @@ export default class cateList extends Vue{
     outline: none;
     cursor:pointer;
     flex-shrink:0;
+}
+.bg-w {
+    color:#5479B6;
+    background:#ddd;
+    .data-list-name {
+        background:#fff
+    }
 }
 </style>
