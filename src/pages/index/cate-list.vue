@@ -1,11 +1,11 @@
 <template>
     <div class="data">
-        <div class="alls" style="background: rgb(83, 98, 136); color: rgb(255, 255, 255);" @click='lookClpct({id:""},null)'>全类型综合指数</div>
+        <div :class="cate_index==-1?'alls bg-w':'alls'" @click='lookClpct({id:-1},null,false)'>全类型综合指数</div>
         <div class="swiper-container">
             <!--@mouseleave="resumeScroll"-->
             <div class="swiper-wrapper">
                 <div class="swiper-slide" v-for="(item,index) in cateList" :key="item.id">
-                    <div class="sp-title" @click="lookClpct(item,index)">
+                    <div :class="cate_index == item.id && is_1st_cate?'sp-title bg-w': 'sp-title'" @click="lookClpct(item,index,true)">
                         <!--传一个空进来是避免没传pid影响代码运行，js里面传了pid，这里用空代替pid-->
                         <div class='flex'>
                             <img :src="'static/assets/fl'+index+'.png'">
@@ -13,8 +13,8 @@
                         </div>
                     <!--button class="xiangqins" @click="lookFisrtDetail(item.id,item.name)">查看详情</button-->
                     </div>
-                    <div class="data-list " v-for="(cont,i) in item.children" :key="cont.id" @click='toDetail(cont)'>
-                        <div :class="cate_index == cont.id?'data-list-name bg-w':'data-list-name'" @click='lookClpct(cont,i)'>
+                    <div :class="cate_index == cont.id && !is_1st_cate?'data-list bg-w':'data-list'" v-for="(cont,i) in item.children" :key="cont.id" @click='toDetail(cont)'>
+                        <div :class="cate_index == cont.id?'data-list-name bg-w':'data-list-name'" @click='lookClpct(cont,i,false)'>
                             {{cont.name}}指数
                         </div>
                         <p>指数:{{cont.linedate?(cont.linedate.length>0?cont.linedate[cont.linedate.length-1].mindex:'暂无数据'):'aaa'}}点</p>
@@ -40,7 +40,8 @@ import echarts from 'echarts'
 @Component({})
 export default class cateList extends Vue{
     chart:any
-    cate_index:number = 0
+    cate_index:number = -1
+    is_1st_cate: boolean = false
     @Prop({
         type: Array
     })
@@ -117,9 +118,11 @@ export default class cateList extends Vue{
         
     }
     
-    lookClpct(item:any,index:number) {//点选cate
+    lookClpct(item:any,index:number, cate_type: boolean) {//点选cate
         event.stopPropagation(); 
         this.cate_index = item.id
+        this.is_1st_cate = cate_type
+        if(this.cate_index ==-1) return
         this.$emit('getNowCate', item)
     }
 
@@ -240,7 +243,10 @@ export default class cateList extends Vue{
     padding:.5rem;
     position:absolute;
     width:100%;
+    background: rgb(83, 98, 136); 
+    color: rgb(255, 255, 255);
     box-sizing:border-box;
+    cursor:pointer;
 }
 .xiangqins,.xiangqins2{
     padding: 5px 40px;

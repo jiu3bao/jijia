@@ -14,8 +14,18 @@ ul,li {
 }
 
 svg {
-	width:80%;
-	height:auto;
+	height:100%;
+}
+
+svg g path {
+    visibility: visible;
+    cursor: pointer;
+	pointer-events: all;
+}
+
+svg g path:hover {
+	fill: #000;
+	opacity: .3;
 }
 
 @media screen and (max-width: 1920px) {

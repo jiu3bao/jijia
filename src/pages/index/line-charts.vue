@@ -1,7 +1,7 @@
 <template>
     <div class='line' style='width:100%'>
-        <div id='line' style='width:100%;height:300px'></div>
-        <div id='bar' style='width:100%;height:300px;background:#000;'></div>
+        <div id='line' style='width:100%;height:50%'></div>
+        <div id='bar' style='width:100%;height:50%;background:#000;'></div>
     </div>
 </template>
 
@@ -43,6 +43,7 @@ export default class lineChart extends Vue{
 
     init_line(val) {
         if(this.chart1) this.chart1.dispose()
+        console.log(val,12121)
         let y:Array<any> = []
         let x:Array<any> = []
         this.$nextTick(() => {
@@ -52,7 +53,6 @@ export default class lineChart extends Vue{
                 x.push(((item.mdate) / 100).toFixed(2))
 
             })
-            console.log(val)
             this.chart1 = echarts.init(document.getElementById("line") as HTMLDivElement);
             let option = {
                 xAxis: {
@@ -128,16 +128,22 @@ export default class lineChart extends Vue{
                     trigger: 'axis'
                 },
                 calculable : true,
-                legend:{
-                    data: data
-                },
+                // legend:{
+                //     data: data
+                // },
                 xAxis: [{
 					type: 'category',
 					boundaryGap: false,
 					data: x
 				}],
                 yAxis: [{
-					type: 'value'
+					type: 'value',
+                    min: function(value) {
+                        return value.min - 20;
+                    },
+                    max: function(value) {
+                        return value.max + 20;
+                    }
 				}],
                 grid: {
                     x: 60,
@@ -253,6 +259,7 @@ export default class lineChart extends Vue{
 <style lang="less">
     .line {
         width:100%;
-        margin-top:15px;
+        //margin-top:15px;
+        height:100%;
     }
 </style>

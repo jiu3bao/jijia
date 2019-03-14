@@ -1,6 +1,6 @@
 <template>
     <div class='map'>
-        <div v-show='!show_qu'>
+        <div v-show='!show_qu' style='height:100%'>
             <DQ v-if='city_code == "533400000000"' @showIfra = 'show_ifra'></DQ>
             <NJ v-if='city_code == "533300000000"' @showIfra = 'show_ifra'></NJ>
             <DH v-if='city_code == "533100000000"' @showIfra = 'show_ifra'></DH>
@@ -105,14 +105,17 @@ export default class mapContain extends Vue{
         width:80%;
         margin:0 auto;
         position:relative;
-        height:60%;
+        height:80%;
+        div{
+            height:100%;
+            display:flex;
+            justify-content:center;
+            align-items:center
+        }
     }
     .iframe {
         position:absolute;
         top:80px;
 
-    }
-    svg {
-        height:50%;
     }
 </style>

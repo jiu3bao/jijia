@@ -171,6 +171,7 @@ export default class login extends Vue{
         padding: 0 2em;
         border-radius: 30px;
         margin-top: 30px;
+        box-sizing:border-box;
     }
 
     .login-input input::-webkit-input-placeholder {

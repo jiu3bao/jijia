@@ -2,16 +2,21 @@
     <div style='height:100%'>
         <Header></Header>
         <Top :nowCate='now_cate' class='af-head'></Top>
-        <el-row class='pd'>
+        <el-row class='pd' style='over-flow:hidden'>
             <el-col :span="6" style='height:100%'>
                 <CateList :cateList="cate_list" @getNowCate='get_now_cate'></CateList>
             </el-col>
-            <el-col :span="18" style='height:100%'>
-                <TimeTool @changeTime='changeTime'></TimeTool>
-                <el-col :span='16' style='min-height:20px'>
+            <el-col :span="18" style='height:100%;position:relative'>
+                <TimeTool @changeTime='changeTime' class='timer'></TimeTool>
+                <el-col :span='16' style='height:100%;
+                display:flex;
+                flex-direction:column;
+                justify-content:space-around;
+                align-items:center' class='af-head1'>
                     <MapsContain></MapsContain>
+                    <img src='static/assets/trend.png' style='margin:0 auto;'/>
                 </el-col>
-                <el-col :span='8' v-if='!this.code.qu || this.code.qu.length ==0 '>
+                <el-col :span='8' v-if='!this.code.qu || this.code.qu.length ==0 ' style='height:100%' class='af-head1'>
                     <LIneCharts :lineDate="line_date" :lineLength='cate_list_length'
                         :barDate='bar_date'></LIneCharts>
                 </el-col>
@@ -42,6 +47,7 @@ import LIneCharts from './line-charts.vue'
     },
 })
 export default class index extends Vue{
+    loading:any
     cate_list:Array<any>=[]
     cate_list_length:number = 0
     now_cate:any={}
@@ -270,6 +276,18 @@ export default class index extends Vue{
         return {city:this.$store.state.area_code.toString(), qu: this.$store.state.qu_code.toString()}
     }
 
+    beforeUpdate() {
+        // this.loading = this.$loading({
+        //   lock: true,
+        //   text: 'Loading',
+        //   spinner: 'el-icon-loading',
+        //   background: 'rgba(0, 0, 0, 0.7)'
+        // });
+    }
+
+    updated() {
+        //this.loading.close()
+    }
 
     @Watch('code', {deep:true})
         watch_code(val) {
@@ -288,7 +306,6 @@ export default class index extends Vue{
         watch_area(val) {
             this.get_line_date()
             this.get_cate()
-            
         }
 
     @Watch('time', {deep: true}) //页面初始化
@@ -296,6 +313,7 @@ export default class index extends Vue{
             this.cate_list=[]
             this.get_cate()
             this.get_bar_date()
+            this.get_line_date()
         }
 
     changeTime(data) {
@@ -514,5 +532,13 @@ export default class index extends Vue{
     }
     .af-head {
         margin-top:1.75rem
+    }
+    .af-head1 {
+        padding-top:2.5rem;
+        box-sizing:border-box;
+    }
+    .timer {
+        position:absolute;
+        top:0;
     }
 </style>
