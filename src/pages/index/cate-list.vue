@@ -1,11 +1,11 @@
 <template>
     <div class="data">
-        <div :class="cate_index==-1?'alls bg-w':'alls'" @click='lookClpct({id:-1},null,false)'>全类型综合指数</div>
+        <div class="alls" style="background: rgb(83, 98, 136); color: rgb(255, 255, 255);" @click='lookClpct({id:""},null)'>全类型综合指数</div>
         <div class="swiper-container">
             <!--@mouseleave="resumeScroll"-->
             <div class="swiper-wrapper">
                 <div class="swiper-slide" v-for="(item,index) in cateList" :key="item.id">
-                    <div :class="cate_index == item.id && is_1st_cate?'sp-title bg-w': 'sp-title'" @click="lookClpct(item,index,true)">
+                    <div class="sp-title" @click="lookClpct(item,index)">
                         <!--传一个空进来是避免没传pid影响代码运行，js里面传了pid，这里用空代替pid-->
                         <div class='flex'>
                             <img :src="'static/assets/fl'+index+'.png'">
@@ -13,8 +13,8 @@
                         </div>
                     <!--button class="xiangqins" @click="lookFisrtDetail(item.id,item.name)">查看详情</button-->
                     </div>
-                    <div :class="cate_index == cont.id && !is_1st_cate?'data-list bg-w':'data-list'" v-for="(cont,i) in item.children" :key="cont.id" @click='toDetail(cont)'>
-                        <div :class="cate_index == cont.id?'data-list-name bg-w':'data-list-name'" @click='lookClpct(cont,i,false)'>
+                    <div class="data-list " v-for="(cont,i) in item.children" :key="cont.id" @click='toDetail(cont)'>
+                        <div :class="cate_index == cont.id?'data-list-name bg-w':'data-list-name'" @click='lookClpct(cont,i)'>
                             {{cont.name}}指数
                         </div>
                         <p>指数:{{cont.linedate?(cont.linedate.length>0?cont.linedate[cont.linedate.length-1].mindex:'暂无数据'):'aaa'}}点</p>
@@ -37,15 +37,16 @@
 <script lang='ts'>
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import echarts from 'echarts'
+import $ from 'jquery'
 @Component({})
 export default class cateList extends Vue{
     chart:any
-    cate_index:number = -1
-    is_1st_cate: boolean = false
+    cate_index:number = 0
     @Prop({
         type: Array
     })
     cateList
+    timer:any
 
     init(id:string,res:Array<any>) {// 折线图渲染
         if(res.length==0) {
@@ -118,17 +119,17 @@ export default class cateList extends Vue{
         
     }
     
-    lookClpct(item:any,index:number, cate_type: boolean) {//点选cate
-        event.stopPropagation(); 
+    lookClpct(item:any,index:number) {//点选cate
+        event.stopPropagation(); //冒泡事件
+        this.stop()
         this.cate_index = item.id
-        this.is_1st_cate = cate_type
-        if(this.cate_index ==-1) return
-        this.$emit('getNowCate', item)
+        this.$emit('getNowCate', item)//自传父
     }
 
     toDetail(cate) {
         //this.$store.commit('SET_DETAIL_CATE', cate)
         //this.$router.push('/detail?c1='+cate.pid + '&c2='+cate.id+'&name='+cate.name)
+        this.stop()
         if(this.$store.state.token && this.$store.state.token.length >0 ) {
             this.$store.commit('SET_DETAIL_CATE', cate)
             this.$router.push('/detail?c1='+cate.pid + '&c2='+cate.id+'&name='+cate.name)
@@ -137,6 +138,41 @@ export default class cateList extends Vue{
         }
         
     }
+  	
+  	stop() {//滚动停止
+  		const that = this
+  		setTimeout(function() {
+  			if(that.timer){   
+            	clearInterval(that.timer);   
+        	}  
+  		},0)
+  	}
+  	
+    scrollAuto() {//滚动		
+	    let h=-1;  
+	    this.timer = setInterval(function(){  
+	        //获取当前滚动条高度  
+	        const current = $('.swiper-container')[0].scrollTop;  
+	        if(current==h){   
+	            //滚动到底端，刷新屏幕，并返回顶端   
+	            clearInterval(this.timer);    
+	        }  
+	        else  
+	        {   
+	            //以25ms/3.5px的速度滚动   
+	            h=current;   
+	            $('.swiper-container')[0].scrollTop=h+3.5;  
+	        }  
+	    },250);  
+	}
+
+    mounted() {
+		let that = this
+		setTimeout(() => {
+
+			that.scrollAuto()
+		}, 3000)
+	}
 }
 </script>
 
@@ -243,10 +279,7 @@ export default class cateList extends Vue{
     padding:.5rem;
     position:absolute;
     width:100%;
-    background: rgb(83, 98, 136); 
-    color: rgb(255, 255, 255);
     box-sizing:border-box;
-    cursor:pointer;
 }
 .xiangqins,.xiangqins2{
     padding: 5px 40px;
@@ -266,4 +299,16 @@ export default class cateList extends Vue{
         background:#fff
     }
 }
+
+/*@media screen and (max-width: 1024px) {
+	#line >div canvas{
+		left:10px !important;
+		width:236px !important;
+	}
+}
+@media screen and (max-width: 1280px) {
+	#line >div canvas{
+		width:256px !important;
+	}
+}*/
 </style>

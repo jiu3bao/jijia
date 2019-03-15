@@ -1,7 +1,7 @@
 <template>
     <div class='line' style='width:100%'>
-        <div id='line' style='width:100%;height:50%'></div>
-        <div id='bar' style='width:100%;height:50%;background:#000;'></div>
+        <div id='line' style='width:100%;height:300px'></div>
+        <div id='bar' style='width:100%;height:300px;background:#000;'></div>
     </div>
 </template>
 
@@ -14,6 +14,8 @@ import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 export default class lineChart extends Vue{
     chart1:any
     chart2:any
+    new_linedata: Array<any>=[]//定义接收折线图的值
+    new_bardata: Array<any>=[]
 
     @Prop()
     lineDate: Array<any>
@@ -23,6 +25,8 @@ export default class lineChart extends Vue{
 
     @Prop()
     barDate: Array<any>
+    @Prop()//子组件在这里接收父组件传的值
+    resize:number
 
     @Watch('lineDate', { deep: true })
     changeDate(val:Array<any>) {
@@ -33,17 +37,28 @@ export default class lineChart extends Vue{
         } else {
             this.init_line(val)
         }
-        
+        this.new_linedata = val//把折线图的值存起来
     }
 
     @Watch('barDate', { immediate: true, deep: true })
     changebar(val:Array<any>) {
         this.init_bar(val)
+        this.new_bardata=val//把柱状图的值存起来
     }
-
+    
+    
+	@Watch('resize')//监听这个属性
+	window_res(n) {//watch传入两个参数，第一个新数据，第二个旧数据，随便传入一个参数n，重载折线图和柱状图，需要在父组件哪里处理resize这个属性
+		console.log(222)
+		if(this.new_linedata[0] && this.new_linedata[0].name) {
+            this.init_all_line(this.new_linedata)
+        } else {
+            this.init_line(this.new_linedata)
+        }
+        this.init_bar(this.new_bardata)
+	}
     init_line(val) {
         if(this.chart1) this.chart1.dispose()
-        console.log(val,12121)
         let y:Array<any> = []
         let x:Array<any> = []
         this.$nextTick(() => {
@@ -53,6 +68,7 @@ export default class lineChart extends Vue{
                 x.push(((item.mdate) / 100).toFixed(2))
 
             })
+            console.log(val)
             this.chart1 = echarts.init(document.getElementById("line") as HTMLDivElement);
             let option = {
                 xAxis: {
@@ -77,8 +93,10 @@ export default class lineChart extends Vue{
             		min: 'dataMin',
                 },
                 grid: {
-                    x: 60,
-                    y: 70
+                    top:'3%',
+                    left:'3%',
+                    bottom:'3%',
+                    right:'3%'
                 },
                 series: [{
                     data: y,
@@ -128,22 +146,16 @@ export default class lineChart extends Vue{
                     trigger: 'axis'
                 },
                 calculable : true,
-                // legend:{
-                //     data: data
-                // },
+                legend:{
+                    data: data
+                },
                 xAxis: [{
 					type: 'category',
 					boundaryGap: false,
 					data: x
 				}],
                 yAxis: [{
-					type: 'value',
-                    min: function(value) {
-                        return value.min - 20;
-                    },
-                    max: function(value) {
-                        return value.max + 20;
-                    }
+					type: 'value'
 				}],
                 grid: {
                     x: 60,
@@ -259,7 +271,7 @@ export default class lineChart extends Vue{
 <style lang="less">
     .line {
         width:100%;
-        //margin-top:15px;
-        height:100%;
+        margin-top:15px;
     }
+ 
 </style>
