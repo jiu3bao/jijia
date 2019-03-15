@@ -18,7 +18,7 @@
                 </el-col>
                 <el-col :span='8' v-if='!this.code.qu || this.code.qu.length ==0 ' style='height:100%' class='af-head1'>
                     <LIneCharts :lineDate="line_date" :lineLength='cate_list_length'
-                        :barDate='bar_date'></LIneCharts>
+                        :barDate='bar_date' :resize="resize"></LIneCharts>
                 </el-col>
             </el-col>
             
@@ -48,6 +48,7 @@ import LIneCharts from './line-charts.vue'
 })
 export default class index extends Vue{
     loading:any
+    resize:number=0
     cate_list:Array<any>=[]
     cate_list_length:number = 0
     now_cate:any={}
@@ -263,6 +264,7 @@ export default class index extends Vue{
 		}
     //area_name:string = ''
 
+    
     get city_code():string {
         return this.$store.state.area_code.toString()
     }
@@ -323,7 +325,6 @@ export default class index extends Vue{
     }
     
     created() {
-        //this.get_cate()
     }
     
     
@@ -522,6 +523,17 @@ export default class index extends Vue{
         }
     }
 
+    window_resize() {
+    	const that=this;
+			//当浏览器窗口大小改变时，设置显示内容的高度
+		window.onresize=function(){//窗口变化时resize发生变化，子组件才能监听
+			that.resize+=1
+		}
+    }
+    
+	mounted(){
+		this.window_resize()
+	}
 }
 </script>
 

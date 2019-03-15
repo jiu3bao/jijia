@@ -37,6 +37,7 @@
 <script lang='ts'>
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import echarts from 'echarts'
+import $ from 'jquery'
 @Component({})
 export default class cateList extends Vue{
     chart:any
@@ -46,6 +47,7 @@ export default class cateList extends Vue{
         type: Array
     })
     cateList
+    timer:any
 
     init(id:string,res:Array<any>) {// 折线图渲染
         if(res.length==0) {
@@ -129,6 +131,7 @@ export default class cateList extends Vue{
     toDetail(cate) {
         //this.$store.commit('SET_DETAIL_CATE', cate)
         //this.$router.push('/detail?c1='+cate.pid + '&c2='+cate.id+'&name='+cate.name)
+        this.stop()
         if(this.$store.state.token && this.$store.state.token.length >0 ) {
             this.$store.commit('SET_DETAIL_CATE', cate)
             this.$router.push('/detail?c1='+cate.pid + '&c2='+cate.id+'&name='+cate.name)
@@ -137,6 +140,39 @@ export default class cateList extends Vue{
         }
         
     }
+
+    stop() {//滚动停止
+        const that = this
+        setTimeout(function() {
+            if(that.timer){   
+                clearInterval(that.timer);   
+            }  
+        },0)
+    }
+  	
+    scrollAuto() {//滚动		
+	    let h=-1;  
+	    this.timer = setInterval(function(){  
+	        //获取当前滚动条高度  
+	        const current = $('.swiper-container')[0].scrollTop;  
+	        if(current==h){   
+	            //滚动到底端，刷新屏幕，并返回顶端   
+	            clearInterval(this.timer);    
+	        }  
+	        else  
+	        {   
+	            //以25ms/3.5px的速度滚动   
+	            h=current;   
+	            $('.swiper-container')[0].scrollTop=h+3.5;  
+	        }  
+	    },250);  
+	}
+    mounted() {
+		let that = this
+		setTimeout(() => {
+ 			that.scrollAuto()
+		}, 3000)
+	}
 }
 </script>
 

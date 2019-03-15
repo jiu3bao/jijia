@@ -14,6 +14,8 @@ import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 export default class lineChart extends Vue{
     chart1:any
     chart2:any
+    new_linedata: Array<any>=[]//定义接收折线图的值
+    new_bardata: Array<any>=[]
 
     @Prop()
     lineDate: Array<any>
@@ -24,6 +26,9 @@ export default class lineChart extends Vue{
     @Prop()
     barDate: Array<any>
 
+    @Prop()//子组件在这里接收父组件传的值
+    resize:number
+
     @Watch('lineDate', { deep: true })
     changeDate(val:Array<any>) {
         console.log(8989889)
@@ -33,13 +38,25 @@ export default class lineChart extends Vue{
         } else {
             this.init_line(val)
         }
-        
+        this.new_linedata = val//把折线图的值存起来
     }
 
     @Watch('barDate', { immediate: true, deep: true })
     changebar(val:Array<any>) {
         this.init_bar(val)
+        this.new_bardata=val//把柱状图的值存起来
     }
+
+    @Watch('resize')//监听这个属性
+	window_res(n) {//watch传入两个参数，第一个新数据，第二个旧数据，随便传入一个参数n，重载折线图和柱状图，需要在父组件哪里处理resize这个属性
+		console.log(222)
+		if(this.new_linedata[0] && this.new_linedata[0].name) {
+            this.init_all_line(this.new_linedata)
+        } else {
+            this.init_line(this.new_linedata)
+        }
+        this.init_bar(this.new_bardata)
+	}
 
     init_line(val) {
         if(this.chart1) this.chart1.dispose()
