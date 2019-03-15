@@ -14,7 +14,7 @@
                 justify-content:space-around;
                 align-items:center' class='af-head1'>
                     <MapsContain></MapsContain>
-                    <img src='static/assets/trend.png' style='margin:0 auto;'/>
+                    <img src='static/assets/trend.png' style='margin:0 auto;width:350px'/>
                 </el-col>
                 <el-col :span='8' v-if='!this.code.qu || this.code.qu.length ==0 ' style='height:100%' class='af-head1'>
                     <LIneCharts :lineDate="line_date" :lineLength='cate_list_length'

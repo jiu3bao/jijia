@@ -279,4 +279,5 @@ export default class lineChart extends Vue{
         //margin-top:15px;
         height:100%;
     }
+
 </style>
