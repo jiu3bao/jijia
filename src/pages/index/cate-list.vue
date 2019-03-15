@@ -122,6 +122,7 @@ export default class cateList extends Vue{
     
     lookClpct(item:any,index:number, cate_type: boolean) {//点选cate
         event.stopPropagation(); 
+        this.stop()
         this.cate_index = item.id
         this.is_1st_cate = cate_type
         if(this.cate_index ==-1) return
@@ -227,13 +228,13 @@ export default class cateList extends Vue{
     background:#525a88;
     align-items:center;
 }
-.data-list:hover {
-    color:#5479B6;
-    background:#ddd
-}
-.data-list:hover > .data-list-name {
-    background:#fff
-}
+// .data-list:hover {
+//     color:#5479B6;
+//     background:#ddd
+// }
+// .data-list:hover > .data-list-name {
+//     background:#fff
+// }
 .data-list-name {
 	padding:0 0.5rem;
     width:30%;
