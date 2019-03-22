@@ -537,7 +537,10 @@ if (window.orientation == 90 || window.orientation == -90) {
   
 }
 else if (window.orientation == 0 || window.orientation == 180) {
-    alert('请横屏展示')
+    if(($(window).width())<1024){
+        alert('请横屏展示')
+    }
+    
 }
 }
 
