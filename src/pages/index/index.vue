@@ -36,6 +36,7 @@ import MapsContain from './map.vue'
 import CateList from './cate-list.vue'
 import TimeTool from './time.vue'
 import LIneCharts from './line-charts.vue'
+import $ from 'jquery'
 @Component({
     components: {
         Header,
@@ -530,11 +531,22 @@ export default class index extends Vue{
 			that.resize+=1
 		}
     }
-    
+
+ orient() {
+if (window.orientation == 90 || window.orientation == -90) {
+  
+}
+else if (window.orientation == 0 || window.orientation == 180) {
+    alert('请横屏展示')
+}
+}
+
 	mounted(){
-		this.window_resize()
+        this.window_resize()
+        this.orient()
 	}
 }
+
 </script>
 
 <style lang="less">

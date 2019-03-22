@@ -1,7 +1,7 @@
 <template>
     <div class='line' style='width:100%'>
         <div id='line' style='width:100%;height:50%'></div>
-        <div id='bar' style='width:100%;height:50%;background:#000;'></div>
+        <div id='bar' style='width:100%;height:50%;'></div>
     </div>
 </template>
 
@@ -49,7 +49,6 @@ export default class lineChart extends Vue{
 
     @Watch('resize')//监听这个属性
 	window_res(n) {//watch传入两个参数，第一个新数据，第二个旧数据，随便传入一个参数n，重载折线图和柱状图，需要在父组件哪里处理resize这个属性
-		console.log(222)
 		if(this.new_linedata[0] && this.new_linedata[0].name) {
             this.init_all_line(this.new_linedata)
         } else {
@@ -137,7 +136,7 @@ export default class lineChart extends Vue{
                 itemStyle: {normal: {areaStyle: {type: 'default'}}}, 
             })
         })
-        console.log(lengend,data, x)
+        // console.log(lengend,data, x)
         this.$nextTick(() => {
             this.chart1 = echarts.init(document.getElementById("line") as HTMLDivElement);
             let option = {
@@ -202,7 +201,7 @@ export default class lineChart extends Vue{
                     containLabel: true
                 },
                 xAxis: [{
-                    show: true,
+                    show: false,
                     type: 'value',
                     nameLocation:'end',
                     nameTextStyle:{
@@ -227,8 +226,8 @@ export default class lineChart extends Vue{
                     }],
                     axisLabel: {
                         textStyle: {
-                            fontSize: '12',
-                            color: 'white',
+                            fontSize: '14',
+                            color: '#000',
                         }
                     }
                 }],

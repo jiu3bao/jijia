@@ -177,7 +177,7 @@
 		width: 100%;
 		overflow-y: scroll;
 		height: 100%;
-		padding-top: 1.75rem;
+		padding-top: 1.51rem;
 		box-sizing: border-box;
 	}
 	.swiper-slide {
@@ -200,6 +200,9 @@
 		cursor: pointer;
 		color: #fff;
 		justify-content: space-between;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 	.sp-data {
 		background: #525a88;
@@ -261,7 +264,7 @@
 	}
 	.alls {
 		font-size: .7rem;
-		padding: .5rem;
+		padding: .3rem;
 		position: absolute;
 		width: 100%;
 		background: rgb(83, 98, 136);
@@ -285,7 +288,24 @@
 		color: #5479B6;
 		background: #ddd;
 		.data-list-name {
-			background: #fff
+			background: #fff;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
 		}
 	}
+	@media screen and (max-width: 1024px){
+	.sp-title{
+		font-size:0.6rem !important;
+	}
+	.data-list{
+		font-size:0.6rem !important;
+	}
+	.data-list-name{
+		width:54%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+}
 </style>
